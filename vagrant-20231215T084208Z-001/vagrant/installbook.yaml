@@ -1,0 +1,39 @@
+---
+- name: Install Apache2
+  hosts: virtualmachines
+  become: true  # Run tasks with sudo (root) privileges
+  tasks:
+    - name: Install Apache2
+      apt:
+        update_cache: yes
+        name: apache2
+        state: present
+
+- name: Install MariaDB
+  hosts: virtualmachines
+  become: true
+  tasks:
+    - name: Install MariaDB
+      apt:
+        name: mariadb-server
+        state: present
+
+- name: Check and Install UFW
+  hosts: virtualmachines
+  become: true
+  tasks:
+    - name: Determine Package Manager
+      set_fact:
+        pkg_mgr: "{{ 'apt' if ansible_pkg_mgr == 'apt' else 'yum' }}"
+
+    - name: Check if UFW is installed
+      command: "{{ pkg_mgr }} list installed ufw"
+      register: ufw_check
+      ignore_errors: true
+
+    - name: Install UFW
+      ansible.builtin.package:
+        name: ufw
+        state: present
+      when: ufw_check.rc != 0
+...

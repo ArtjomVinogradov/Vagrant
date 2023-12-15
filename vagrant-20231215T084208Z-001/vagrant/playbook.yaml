@@ -1,0 +1,21 @@
+---
+- name: My first play
+  hosts: virtualmachines
+  tasks:
+  - name: Ping my hosts
+    ansible.builtin.ping:
+  - name: Print message
+    ansible.builtin.debug:
+     msg: Hello world
+
+- name: Collect OS and Kernel Information
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Ping hosts
+      ping:
+
+    - name: Display OS and Kernel Information
+      debug:
+        msg: "OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}, Kernel: {{ ansible_facts['kernel'] }}"
+...
